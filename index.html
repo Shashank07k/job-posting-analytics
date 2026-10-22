@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=http://127.0.0.1:5000/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedInJobTrendAI - Migrated to Flask</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f8faf8;
+      color: #24352e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e3eae5;
+      border-radius: 12px;
+      padding: 36px 32px;
+      max-width: 620px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(36, 53, 46, 0.05);
+    }
+    .badge {
+      background: #eaf3ed;
+      color: #1f5e49;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0 0 10px;
+      color: #24352e;
+      letter-spacing: -0.5px;
+    }
+    p {
+      font-size: 14px;
+      color: #6f8074;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .code-box {
+      background: #24352e;
+      color: #b9d8c8;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      text-align: left;
+      margin: 18px 0;
+      overflow-x: auto;
+    }
+    .btn {
+      display: inline-block;
+      background: #28785e;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .btn:hover {
+      background: #1f5e49;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">Architecture Migrated</span>
+    <h1>LinkedIn Job Trend AI</h1>
+    <p>
+      The application has been successfully migrated from a browser-only prototype into a 
+      <strong>Python + Flask</strong> web application. The core analysis, NLP, and Scikit-learn
+      machine learning now run on the Python backend as required.
+    </p>
+
+    <div class="code-box">
+      # Start the Flask server:<br>
+      pip install -r requirements.txt<br>
+      python app.py<br><br>
+      # Then open:<br>
+      http://127.0.0.1:5000/
+    </div>
+
+    <p style="font-size: 12px; margin-bottom: 24px;">
+      If your Flask server is currently running, click below to open the application:
+    </p>
+
+    <a href="http://127.0.0.1:5000/" class="btn">Open Flask Application (Port 5000)</a>
+  </div>
+</body>
+</html>

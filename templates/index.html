@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Upload job-posting data to explore roles, skills, trends, forecasts and AI-generated insights.">
+  <title>LinkedInJobTrendAI | Job Data Intelligence</title>
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' rx='7' fill='%2328785e'/&gt;&lt;text x='16' y='22' font-size='16' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'&gt;JL&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="landing-page">
+  <a class="landing-skip" href="#main-content">Skip to main content</a>
+
+  <header class="landing-header">
+    <div class="landing-header-inner">
+      <a href="#home" class="landing-brand" aria-label="LinkedInJobTrendAI home">
+        <span class="landing-logo" aria-hidden="true">JL</span>
+        <span><strong>LinkedInJobTrendAI</strong><small>Job Trend Analysis &amp; Prediction</small></span>
+      </a>
+      <nav class="landing-nav" aria-label="Primary navigation">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#analyze">Analyze</a>
+        <a href="#analyze" class="landing-nav-cta">Analyze Dataset</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="landing-hero" id="home">
+      <div class="landing-hero-grid" aria-hidden="true"></div>
+      <div class="landing-orb landing-orb-one" aria-hidden="true"></div>
+      <div class="landing-orb landing-orb-two" aria-hidden="true"></div>
+      <div class="landing-shell landing-hero-layout">
+        <div class="landing-hero-copy">
+          <p class="landing-eyebrow"><span></span> Job data intelligence platform</p>
+          <h1>Turn Job Data Into <em>Career Intelligence.</em></h1>
+          <p class="landing-hero-lead">Upload a job-posting dataset and uncover skills, roles, trends, forecasts, and AI-powered insights in minutes.</p>
+          <div class="landing-actions">
+            <a href="#analyze" class="landing-button landing-button-primary">Analyze Your Dataset</a>
+            <a href="#features" class="landing-button landing-button-ghost">Explore Features</a>
+          </div>
+          <p class="landing-hero-note">
+            <span>&#10003; CSV upload</span><span>&#10003; Python-powered analysis</span><span>&#10003; One dashboard</span>
+          </p>
+        </div>
+
+        <div class="landing-hero-visual" aria-label="Example analysis preview">
+          <div class="landing-preview-label">Example analysis</div>
+          <div class="hero-analytics-panel">
+            <div class="hero-panel-top">
+              <div><span class="preview-kicker">Skill momentum</span><strong>Technology signals</strong></div>
+              <span class="preview-status"><i></i> Analyzed</span>
+            </div>
+            <div class="momentum-list">
+              <div class="momentum-row"><span>Generative AI</span><div class="momentum-track"><i style="width:88%"></i></div><strong>+42%</strong></div>
+              <div class="momentum-row"><span>RAG</span><div class="momentum-track"><i style="width:69%"></i></div><strong>+31%</strong></div>
+              <div class="momentum-row"><span>Cloud</span><div class="momentum-track"><i style="width:48%"></i></div><strong>+18%</strong></div>
+            </div>
+            <div class="hero-mini-chart">
+              <span>Observed mentions</span>
+              <svg viewBox="0 0 420 96" role="img" aria-label="Illustrative upward skill mention trend">
+                <defs><linearGradient id="heroArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#61c99a" stop-opacity=".32"/><stop offset="1" stop-color="#61c99a" stop-opacity="0"/></linearGradient></defs>
+                <path d="M5 82 C55 78,72 65,110 68 S175 47,210 54 S270 28,315 35 S370 12,415 16 L415 96 L5 96 Z" fill="url(#heroArea)"/>
+                <path d="M5 82 C55 78,72 65,110 68 S175 47,210 54 S270 28,315 35 S370 12,415 16" fill="none" stroke="#61c99a" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="415" cy="16" r="5" fill="#0f2924" stroke="#8ee1b9" stroke-width="3"/>
+              </svg>
+            </div>
+          </div>
+          <div class="hero-float-card hero-float-top"><span>Top skill</span><strong>Python</strong><small>42.5% observed share</small></div>
+          <div class="hero-float-card hero-float-bottom"><span>Short-term forecast</span><strong>AI / ML <b>&nearr;</b></strong><small>7-month history preview</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-upload-section" id="analyze">
+      <div class="landing-shell landing-upload-layout">
+        <div class="landing-section-copy">
+          <p class="landing-eyebrow dark"><span></span> Begin the analysis</p>
+          <h2>Start With Your Dataset</h2>
+          <p>Upload a CSV of job postings and let the platform uncover the patterns.</p>
+          <div class="upload-side-notes">
+            <span><i></i> Required: a readable CSV file</span>
+            <span><i></i> Best results: job_title + job_description</span>
+            <span><i></i> Time insights: include date_posted</span>
+          </div>
+        </div>
+
+        <div class="landing-upload-panel">
+          {% if error %}
+          <div class="landing-upload-error" role="alert"><strong>We could not analyze that file.</strong><span>{{ error }}</span></div>
+          {% endif %}
+          <form method="POST" action="{{ url_for('analyze') }}" enctype="multipart/form-data" id="uploadForm">
+            <div class="landing-dropzone" id="dropzoneLabel" role="button" tabindex="0" aria-controls="csv_file" aria-label="Choose a CSV file or drag and drop it here">
+              <span class="landing-upload-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+              </span>
+              <strong id="dropzoneText">Drop your CSV here</strong>
+              <span>or</span>
+              <button type="button" class="landing-button landing-button-dark" id="chooseCsvBtn">Choose CSV</button>
+              <small>CSV files only &middot; Maximum 16 MB</small>
+            </div>
+            <input type="file" name="dataset" id="csv_file" class="visually-hidden-file" accept=".csv,text/csv" required>
+            <div class="landing-file-state" id="fileValidationMessage" aria-live="polite"><span class="file-state-dot"></span>No file selected</div>
+            <button type="submit" class="landing-analyze-button" id="submitBtn" disabled>Analyze Dataset <span>&rarr;</span></button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-features" id="features">
+      <div class="landing-shell">
+        <div class="landing-section-heading">
+          <p class="landing-eyebrow dark"><span></span> Platform capabilities</p>
+          <h2>From Raw Job Data to<br>Actionable Intelligence</h2>
+          <p>One workflow brings structure, context, and a forward-looking view to your dataset.</p>
+        </div>
+        <div class="landing-feature-grid">
+          <article class="landing-feature"><div class="feature-number">01</div><span class="feature-symbol">&#9638;</span><h3>Data Intelligence</h3><p>Understand your dataset, distributions, missing values and posting patterns.</p></article>
+          <article class="landing-feature"><div class="feature-number">02</div><span class="feature-symbol">Aa</span><h3>Skill Intelligence</h3><p>Extract and measure the technologies appearing across job descriptions.</p></article>
+          <article class="landing-feature"><div class="feature-number">03</div><span class="feature-symbol">&#9700;</span><h3>Role Classification</h3><p>Classify postings into broad job-role categories using machine learning.</p></article>
+          <article class="landing-feature"><div class="feature-number">04</div><span class="feature-symbol">&#8599;</span><h3>Trend Analysis</h3><p>See how observed skill frequency and share change over time.</p></article>
+          <article class="landing-feature"><div class="feature-number">05</div><span class="feature-symbol">&#8767;</span><h3>Forecasting</h3><p>Use historical patterns to estimate short-term skill-posting volume.</p></article>
+          <article class="landing-feature"><div class="feature-number">06</div><span class="feature-symbol">&#10022;</span><h3>AI Insights</h3><p>Turn complex analytical results into clear natural-language explanations.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-data-preview" aria-labelledby="preview-heading">
+      <div class="landing-shell">
+        <div class="landing-section-heading light">
+          <p class="landing-eyebrow light"><span></span> Example dashboard preview</p>
+          <h2 id="preview-heading">See What the Data Reveals</h2>
+          <p>Turn dense job-posting records into signals you can scan, compare, and explain.</p>
+        </div>
+        <div class="dashboard-mock">
+          <div class="mock-panel mock-skill-growth">
+            <div class="mock-panel-head"><div><small>Observed signal</small><h3>Skill Growth</h3></div><span>Latest period</span></div>
+            <div class="mock-bar-list">
+              <div><span>RAG</span><i><b style="width:88%"></b></i><strong>+31%</strong></div>
+              <div><span>GenAI</span><i><b style="width:77%"></b></i><strong>+27%</strong></div>
+              <div><span>AWS</span><i><b style="width:56%"></b></i><strong>+18%</strong></div>
+              <div><span>Python</span><i><b style="width:42%"></b></i><strong>+12%</strong></div>
+            </div>
+          </div>
+          <div class="mock-panel mock-role-dist">
+            <div class="mock-panel-head"><div><small>Example mix</small><h3>Role Distribution</h3></div></div>
+            <div class="role-ring-wrap">
+              <div class="role-ring"><span><strong>6</strong> roles</span></div>
+              <div class="role-legend">
+                <div><i class="role-c1"></i><span>AI/ML Engineer</span><b>28%</b></div>
+                <div><i class="role-c2"></i><span>Software Engineer</span><b>24%</b></div>
+                <div><i class="role-c3"></i><span>Data Scientist</span><b>18%</b></div>
+                <div><i class="role-c4"></i><span>Data Analyst</span><b>15%</b></div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-panel mock-wide-chart">
+            <div class="mock-panel-head"><div><small>Illustrative history</small><h3>Monthly Skill Mentions</h3></div><div class="mock-chart-key"><span><i></i> Actual</span><span><i></i> Forecast</span></div></div>
+            <svg viewBox="0 0 940 220" role="img" aria-label="Example historical skill mentions and forecast line chart">
+              <g stroke="#294a43" stroke-width="1" opacity=".42"><line x1="30" x2="915" y1="40" y2="40"/><line x1="30" x2="915" y1="90" y2="90"/><line x1="30" x2="915" y1="140" y2="140"/><line x1="30" x2="915" y1="190" y2="190"/></g>
+              <path d="M35 175 C110 166,150 146,220 151 S335 118,410 126 S520 86,595 99 S690 65,748 74" fill="none" stroke="#74d7a8" stroke-width="4" stroke-linecap="round"/>
+              <path d="M748 74 C805 68,852 42,910 35" fill="none" stroke="#d9a45d" stroke-width="4" stroke-linecap="round" stroke-dasharray="9 10"/>
+              <circle cx="748" cy="74" r="6" fill="#0b211d" stroke="#74d7a8" stroke-width="4"/><circle cx="910" cy="35" r="6" fill="#0b211d" stroke="#d9a45d" stroke-width="4"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-how" id="how-it-works">
+      <div class="landing-shell">
+        <div class="landing-section-heading"><p class="landing-eyebrow dark"><span></span> Simple by design</p><h2>From Upload to Understanding</h2></div>
+        <div class="how-flow">
+          <article><span>01</span><h3>Upload</h3><p>Upload your CSV job dataset.</p></article>
+          <article><span>02</span><h3>Analyze</h3><p>The platform processes the data using NLP and machine learning.</p></article>
+          <article><span>03</span><h3>Understand</h3><p>Explore skills, roles, trends and forecasts.</p></article>
+          <article><span>04</span><h3>Decide</h3><p>Use AI-generated insights to understand the results.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <aside class="landing-trust">
+      <div class="landing-shell trust-inner">
+        <div><span class="trust-mark">&#10003;</span><div><strong>Built for analysis, not hype.</strong><p>Numerical results come from the data pipeline. The LLM is used only to explain those results.</p></div></div>
+        <div class="trust-privacy"><strong>Privacy-aware workflow</strong><span>Your CSV is processed by Flask. Only a structured summary is sent to the LLM when you request insights.</span></div>
+      </div>
+    </aside>
+
+    <section class="landing-final-cta">
+      <div class="landing-shell final-cta-inner">
+        <p class="landing-eyebrow light"><span></span> Start exploring</p>
+        <h2>Ready to Explore Your Job Data?</h2>
+        <p>Upload a dataset and uncover the skills and trends hidden inside it.</p>
+        <a href="#analyze" class="landing-button landing-button-light">Analyze Your Dataset <span>&rarr;</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="landing-footer">
+    <div class="landing-shell footer-inner">
+      <a href="#home" class="landing-brand footer-brand"><span class="landing-logo">JL</span><span><strong>LinkedInJobTrendAI</strong><small>Job Trend Analysis &amp; Prediction</small></span></a>
+      <p>Python &middot; Flask &middot; NLP &middot; Machine Learning &middot; TensorFlow &middot; LLM</p>
+    </div>
+  </footer>
+
+  <script>
+    const fileInput = document.getElementById('csv_file');
+    const dropzone = document.getElementById('dropzoneLabel');
+    const dropzoneText = document.getElementById('dropzoneText');
+    const chooseCsvBtn = document.getElementById('chooseCsvBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const message = document.getElementById('fileValidationMessage');
+    const uploadForm = document.getElementById('uploadForm');
+
+    function setFileState(text, type) {
+      message.textContent = text;
+      message.className = 'landing-file-state' + (type ? ' ' + type : '');
+      submitBtn.disabled = type !== 'is-valid';
+    }
+    function validateSelectedFile(file) {
+      if (!file) { setFileState('No file selected'); return false; }
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        fileInput.value = ''; dropzoneText.textContent = 'Drop your CSV here';
+        setFileState('Unsupported file type. Please choose a .csv file.', 'is-error'); return false;
+      }
+      if (file.size === 0) {
+        fileInput.value = ''; dropzoneText.textContent = 'Drop your CSV here';
+        setFileState('The selected file is empty.', 'is-error'); return false;
+      }
+      if (file.size > 16 * 1024 * 1024) {
+        fileInput.value = ''; dropzoneText.textContent = 'Drop your CSV here';
+        setFileState('This file is larger than 16 MB.', 'is-error'); return false;
+      }
+      dropzoneText.textContent = 'Selected: ' + file.name;
+      setFileState('Ready to analyze', 'is-valid'); return true;
+    }
+    function openPicker() { fileInput.click(); }
+
+    dropzone.addEventListener('click', function (event) { if (!event.target.closest('button')) openPicker(); });
+    chooseCsvBtn.addEventListener('click', openPicker);
+    dropzone.addEventListener('keydown', function (event) {
+      if (event.target.closest('button')) return;
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openPicker(); }
+    });
+    fileInput.addEventListener('change', function () { validateSelectedFile(this.files && this.files[0]); });
+    ['dragenter', 'dragover'].forEach(function (name) {
+      dropzone.addEventListener(name, function (event) { event.preventDefault(); dropzone.classList.add('is-dragging'); });
+    });
+    ['dragleave', 'drop'].forEach(function (name) {
+      dropzone.addEventListener(name, function (event) { event.preventDefault(); dropzone.classList.remove('is-dragging'); });
+    });
+    dropzone.addEventListener('drop', function (event) {
+      const droppedFile = event.dataTransfer.files && event.dataTransfer.files[0];
+      if (droppedFile && validateSelectedFile(droppedFile)) fileInput.files = event.dataTransfer.files;
+    });
+    uploadForm.addEventListener('submit', function (event) {
+      if (!validateSelectedFile(fileInput.files && fileInput.files[0])) event.preventDefault();
+    });
+  </script>
+</body>
+</html>

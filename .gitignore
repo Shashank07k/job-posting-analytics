@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.env.*
+!.env.example
+uploads/*
+!uploads/.gitkeep
+models/*
+!models/.gitkeep
+static/charts/*
+!static/charts/.gitkeep
+.DS_Store
+.idea/
+.vscode/

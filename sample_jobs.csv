@@ -1,0 +1,73 @@
+job_title,company,location,job_description,date_posted,employment_type,experience_level,salary
+Senior Software Engineer,Accenture,Bengaluru,"We are seeking an experienced Senior Software Engineer to design and develop scalable backend microservices using Java, Spring Boot, and REST APIs. Experience with Docker and SQL databases required. Collaborate with product managers and mentors juniors.",2026-01-15,Full-time,Senior-level,1400000
+Data Scientist,TCS,Hyderabad,"Join our core analytics team as a Data Scientist to formulate predictive models, analyze large data sets using Python, Pandas, NumPy, and Scikit-learn. Formulate hypotheses and present findings to leadership.",2026-02-10,Full-time,Mid-level,1200000
+Data Analyst,Infosys,Pune,"Seeking a Data Analyst to extract business metrics, clean datasets, and build executive dashboards using SQL, Excel, and Python. Must have strong analytical communication skills.",2026-02-20,Full-time,Entry-level,650000
+Machine Learning Engineer,Cognizant,Bengaluru,"We are hiring an AI/ML Engineer to deploy deep learning models into production using Python, PyTorch, TensorFlow, and AWS. Work closely with data scientists to optimize inference pipelines.",2026-03-05,Full-time,Mid-level,1350000
+Cloud DevOps Engineer,Wipro,Chennai,"DevOps and Cloud Engineer to manage infrastructure as code, automate CI/CD pipelines, and administer containerized clusters using Docker, Kubernetes, and AWS.",2026-03-12,Full-time,Mid-level,1100000
+Cybersecurity Analyst,Deloitte,Delhi NCR,"Seeking a Cybersecurity Engineer to monitor security operations, evaluate vulnerabilities, and maintain network security defenses across enterprise systems.",2026-03-18,Full-time,Mid-level,1150000
+Full Stack Developer,Accenture,Pune,"Full stack software developer needed to build responsive web applications with JavaScript, React, HTML, CSS, and Node.js. Knowledge of Git, MySQL, and clean software architecture required.",2026-01-22,Full-time,Mid-level,950000
+Data Scientist,Microsoft,Bengaluru,"Data Scientist required to develop machine learning algorithms and statistical models in Python. Experience with Pandas, data cleaning, exploratory data analysis, and feature engineering is essential.",2026-02-14,Full-time,Senior-level,1650000
+Business Data Analyst,Amazon,Hyderabad,"Business Data Analyst responsible for translating business questions into SQL queries, data summaries, and reports. Basic knowledge of Python, Pandas, and data visualization tools is preferred.",2026-01-28,Full-time,Entry-level,750000
+AI/ML Engineer,Google,Bengaluru,"Machine Learning Engineer with strong background in NLP, deep learning, Python, and Docker. Experience building scalable ML systems and monitoring models in cloud environments.",2026-02-18,Full-time,Senior-level,1700000
+Site Reliability Engineer,TCS,Mumbai,"Site Reliability and DevOps Engineer to improve system reliability, configure cloud networks, and automate server provisioning using AWS, Docker, and shell scripting.",2026-02-25,Full-time,Mid-level,1050000
+Information Security Specialist,IBM,Bengaluru,"Information Security and Cybersecurity Analyst to conduct penetration testing, manage SOC alerts, and implement network security policies to protect corporate data assets.",2026-03-01,Full-time,Senior-level,1300000
+Backend Software Developer,Oracle,Hyderabad,"Backend engineer to maintain and build reliable software platforms using Java, Python, and C++. Work with relational databases like PostgreSQL, implement unit tests, and support CI/CD pipelines.",2026-03-10,Full-time,Mid-level,1000000
+Applied Data Scientist,Deloitte,Bengaluru,"Looking for a Data Scientist with expertise in statistical inference, machine learning, Python, NumPy, and SQL. Conduct A/B testing and build automated decision systems.",2026-03-15,Full-time,Mid-level,1250000
+Senior Data Analyst,Accenture,Mumbai,"Data Analyst needed to monitor company KPIs, validate data pipelines, and write optimized SQL queries. Must be comfortable cleaning messy data and presenting findings to stakeholders.",2026-01-18,Full-time,Senior-level,1100000
+Deep Learning Engineer,Microsoft,Hyderabad,"AI/ML Engineer to research and implement generative AI and LLM pipelines using PyTorch, Hugging Face, and RAG architectures. Strong Python programming and cloud deployment skills required.",2026-02-08,Full-time,Senior-level,1800000
+Cloud Infrastructure Engineer,Amazon,Pune,"Cloud Infrastructure Engineer required to maintain high availability in Azure and AWS. Experience with Docker, Kubernetes, Linux systems, and automated monitoring tools.",2026-02-22,Full-time,Mid-level,1150000
+Security Operations Engineer,Wipro,Delhi NCR,"Cybersecurity Specialist responsible for incident response, threat detection, and firewall administration. Strong understanding of cybersecurity frameworks and vulnerability scanning.",2026-03-04,Full-time,Mid-level,980000
+Java Software Engineer,Cognizant,Chennai,"Software engineer responsible for enterprise application services. Proficient in Java, JavaScript, and Docker. Experience debugging production issues and writing maintainable code.",2026-03-22,Full-time,Entry-level,700000
+Lead Data Scientist,Amazon,Bengaluru,"Applied Data Scientist to analyze complex data patterns. Must be proficient in Python, Scikit-learn, Pandas, and data visualization. Experience collaborating with product engineering teams.",2026-01-30,Full-time,Senior-level,1900000
+Analytics Reporting Analyst,Infosys,Bengaluru,"Analytics professional to build recurring reports and perform ad-hoc analysis using SQL and Pandas. Identify trends in customer data and collaborate across business units.",2026-02-12,Full-time,Entry-level,600000
+ML Platform Developer,Accenture,Hyderabad,"Machine learning developer to build automated training workflows and maintain predictive pipelines using TensorFlow, Python, and Kubernetes. Strong mathematical foundations required.",2026-03-08,Full-time,Mid-level,1250000
+DevOps Automation Engineer,Deloitte,Bengaluru,"Platform DevOps Engineer to support software developers with deployment automation, Kubernetes orchestration, and cloud security monitoring in an agile environment.",2026-03-14,Full-time,Mid-level,1080000
+Cybersecurity Audit Analyst,TCS,Hyderabad,"Security engineer to safeguard cloud infrastructure and enterprise applications. Experience in network security, cybersecurity audits, and compliance monitoring.",2026-03-20,Full-time,Mid-level,1020000
+Software Engineer,Infosys,Bengaluru,"Build responsive web applications and backend APIs using Java, Spring Boot, JavaScript, and SQL.",2026-01-12,Full-time,Entry-level,650000
+Data Scientist,TCS,Pune,"Build machine learning models in Python using Pandas, NumPy, Scikit-learn, and statistical analysis.",2026-02-05,Full-time,Mid-level,1150000
+Data Analyst,Wipro,Hyderabad,"Extract data insights using SQL, clean data with Pandas, build dashboards and summary reports.",2026-02-19,Full-time,Entry-level,620000
+AI/ML Engineer,Deloitte,Bengaluru,"Train deep learning and NLP models using Python, TensorFlow, PyTorch, and deploy models to cloud.",2026-03-02,Full-time,Mid-level,1300000
+Cloud DevOps Engineer,Accenture,Bengaluru,"Configure CI/CD pipelines, Docker containers, Kubernetes clusters, and cloud infrastructure on AWS.",2026-03-11,Full-time,Mid-level,1120000
+Cybersecurity Engineer,IBM,Mumbai,"Implement network security protocols, monitor vulnerabilities, and protect enterprise data assets.",2026-03-17,Full-time,Mid-level,1180000
+Software Engineer,Microsoft,Hyderabad,"Design backend services using Java, Python, REST APIs, microservices, and PostgreSQL database.",2026-01-19,Full-time,Mid-level,1250000
+Data Scientist,Cognizant,Bengaluru,"Explore large datasets, train predictive algorithms with Python, Scikit-learn, and present to clients.",2026-02-16,Full-time,Mid-level,1200000
+Data Analyst,Accenture,Delhi NCR,"Write complex SQL queries, analyze sales metrics, and build Tableau and Excel reports.",2026-02-24,Full-time,Mid-level,800000
+AI/ML Engineer,Amazon,Bengaluru,"Develop computer vision and NLP models with PyTorch and Python, optimize model latency on AWS.",2026-03-06,Full-time,Senior-level,1750000
+Cloud DevOps Engineer,Infosys,Pune,"Automate cloud infrastructure using Terraform, Docker, Kubernetes, and Azure cloud services.",2026-03-13,Full-time,Mid-level,1050000
+Cybersecurity Analyst,Deloitte,Bengaluru,"Analyze security logs, handle incident response, and run vulnerability scans across systems.",2026-03-21,Full-time,Entry-level,720000
+Software Developer,TCS,Chennai,"Develop scalable software solutions using Java, JavaScript, React, and MySQL database.",2026-01-25,Full-time,Entry-level,680000
+Data Scientist,Deloitte,Hyderabad,"Develop statistical machine learning pipelines with Python, NumPy, Pandas, and Scikit-learn.",2026-02-11,Full-time,Mid-level,1220000
+Business Analyst,Wipro,Bengaluru,"Analyze business metrics with SQL, create reports, clean datasets, and collaborate with teams.",2026-02-27,Full-time,Mid-level,780000
+Machine Learning Engineer,Microsoft,Bengaluru,"Build and deploy machine learning models using Python, TensorFlow, and Azure ML services.",2026-03-09,Full-time,Senior-level,1680000
+DevOps Engineer,Amazon,Hyderabad,"Deploy and manage containerized microservices using Docker, Kubernetes, and AWS cloud.",2026-03-16,Full-time,Mid-level,1180000
+Cybersecurity Specialist,Accenture,Bengaluru,"Perform threat detection, network security audits, and firewall policy configuration.",2026-03-23,Full-time,Mid-level,1100000
+Software Engineer,Deloitte,Pune,"Develop enterprise web applications using JavaScript, Node.js, React, HTML, and CSS.",2026-01-29,Full-time,Mid-level,920000
+Data Scientist,IBM,Bengaluru,"Design machine learning algorithms using Python, Pandas, NLP, and statistical inference.",2026-02-17,Full-time,Senior-level,1550000
+Data Analyst,TCS,Kolkata,"Query databases with SQL, build KPI dashboards, validate dataset accuracy, and create charts.",2026-02-26,Full-time,Entry-level,580000
+AI/ML Engineer,Cognizant,Hyderabad,"Train generative AI and LLM models using Python, PyTorch, and cloud inference frameworks.",2026-03-07,Full-time,Mid-level,1320000
+Cloud DevOps Engineer,Wipro,Bengaluru,"Manage AWS cloud resources, automate deployments with Docker and Kubernetes clusters.",2026-03-15,Full-time,Mid-level,1060000
+Cybersecurity Engineer,Infosys,Pune,"Safeguard enterprise networks, conduct penetration testing, and ensure security compliance.",2026-03-24,Full-time,Mid-level,1040000
+Software Engineer,Amazon,Bengaluru,"Build scalable cloud services using Java, Python, Docker, microservices, and DynamoDB.",2026-02-01,Full-time,Mid-level,1450000
+Data Scientist,Accenture,Bengaluru,"Build predictive models in Python with Pandas, NumPy, Scikit-learn, and data exploration.",2026-02-15,Full-time,Mid-level,1280000
+Data Analyst,Cognizant,Chennai,"Extract data with SQL, clean data tables, design executive dashboards and reports.",2026-02-28,Full-time,Mid-level,750000
+AI/ML Engineer,TCS,Bengaluru,"Build computer vision and machine learning applications with Python and TensorFlow.",2026-03-03,Full-time,Mid-level,1200000
+DevOps Engineer,Microsoft,Hyderabad,"Automate CI/CD pipelines and infrastructure deployments with Azure, Docker, and Kubernetes.",2026-03-19,Full-time,Senior-level,1500000
+Cybersecurity Analyst,Deloitte,Mumbai,"Monitor enterprise security alerts, conduct vulnerability testing, and secure networks.",2026-03-25,Full-time,Mid-level,1120000
+Software Developer,IBM,Hyderabad,"Write clean code in Java and JavaScript, implement unit tests, and maintain web services.",2026-02-03,Full-time,Entry-level,680000
+Data Scientist,Amazon,Hyderabad,"Formulate hypothesis tests and train machine learning models using Python and Pandas.",2026-02-21,Full-time,Senior-level,1720000
+Data Analyst,Infosys,Bengaluru,"Analyze business performance using SQL, Excel, and Python, presenting weekly data trends.",2026-03-01,Full-time,Entry-level,640000
+Machine Learning Engineer,Accenture,Pune,"Deploy machine learning pipelines using Python, PyTorch, Docker, and cloud platforms.",2026-03-10,Full-time,Mid-level,1260000
+Cloud Engineer,Cognizant,Bengaluru,"Deploy cloud applications on AWS, manage virtual networks and Docker container workflows.",2026-03-22,Full-time,Mid-level,1020000
+Cybersecurity Engineer,Wipro,Delhi NCR,"Monitor SIEM alerts, configure firewalls, and enforce cybersecurity defense standards.",2026-03-26,Full-time,Mid-level,1080000
+Software Engineer,TCS,Hyderabad,"Build web applications with React, JavaScript, Java, and relational database systems.",2026-02-04,Full-time,Entry-level,660000
+Data Scientist,Microsoft,Bengaluru,"Apply machine learning and statistical modeling with Python, Pandas, and Scikit-learn.",2026-02-23,Full-time,Mid-level,1380000
+Business Data Analyst,Amazon,Bengaluru,"Translate customer requirements into SQL metrics, reports, and interactive dashboards.",2026-03-02,Full-time,Mid-level,850000
+AI/ML Engineer,Deloitte,Hyderabad,"Develop NLP algorithms and deep learning models with Python, PyTorch, and TensorFlow.",2026-03-12,Full-time,Mid-level,1340000
+DevOps Engineer,Infosys,Bengaluru,"Manage Kubernetes clusters and automate deployment pipelines across AWS infrastructure.",2026-03-18,Full-time,Mid-level,1090000
+Information Security Analyst,Accenture,Bengaluru,"Assess network security threats, run vulnerability scans, and maintain security protocols.",2026-03-27,Full-time,Mid-level,1140000
+Backend Developer,Cognizant,Pune,"Develop RESTful microservices with Java, Spring, Docker, and PostgreSQL databases.",2026-02-06,Full-time,Mid-level,980000
+Data Scientist,Wipro,Bengaluru,"Analyze data trends, train predictive machine learning models in Python using Pandas.",2026-02-25,Full-time,Mid-level,1160000
+Data Analyst,Deloitte,Bengaluru,"Extract business insights using SQL, clean data tables, and generate reports.",2026-03-04,Full-time,Mid-level,790000
+ML Engineer,Amazon,Bengaluru,"Deploy machine learning pipelines on AWS with Python, PyTorch, and Docker containers.",2026-03-14,Full-time,Senior-level,1650000
+Site Reliability Engineer,TCS,Bengaluru,"Maintain cloud platform uptime, monitor Linux servers, and manage Kubernetes clusters.",2026-03-20,Full-time,Mid-level,1070000
+Cybersecurity Specialist,IBM,Delhi NCR,"Monitor security operations, mitigate malware risks, and audit network defenses.",2026-03-28,Full-time,Senior-level,1350000

@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results &middot; LinkedIn Job Trend Analysis &amp; Prediction</title>
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'&gt;&lt;rect width='32' height='32' rx='7' fill='%2328785e'/&gt;&lt;text x='16' y='22' font-size='16' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'&gt;JL&lt;/text&gt;&lt;/svg&gt;">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <a href="{{ url_for('index') }}" class="nav-brand">
+      <span class="brand-badge">JL</span>
+      <div>
+        <div class="brand-title">LinkedInJobTrendAI</div>
+        <div class="brand-subtitle">Job Trend Analysis & Prediction Dashboard</div>
+      </div>
+    </a>
+    <div class="nav-links">
+      <span class="phase-pill">Analysis Computed in Python/Flask</span>
+      <a href="{{ url_for('index') }}" class="btn btn-secondary btn-small">Upload Another CSV</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Header Summary -->
+    <div class="dashboard-header">
+      <div>
+        <h1 class="hero-title" style="text-align: left; margin-bottom: 4px;">Job Market Analysis Dashboard</h1>
+        <p class="hero-subtitle" style="text-align: left; margin: 0;">
+          File analyzed: <strong>{{ eda.filename }}</strong> &bull; All results computed in Python (Pandas, Scikit-learn, TensorFlow)
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-small">&uarr; New Dataset</a>
+      </div>
+    </div>
+
+    <!-- In-page navigation for easy demoing -->
+    <nav class="section-nav" aria-label="Dashboard sections">
+      <a href="#overview-section">1. Overview</a>
+      <a href="#quality-section">2. Data Quality</a>
+      <a href="#eda-section">3. Exploratory Analysis</a>
+      <a href="#nlp-section">4. NLP &amp; Skills</a>
+      <a href="#classification-section">5. Job Role Classification</a>
+      <a href="#skill-trends">6. Skill Trends</a>
+      <a href="#forecast-section">7. AI Forecast</a>
+      <a href="#insights-section">8. AI Insights</a>
+      <a href="#predict-section">9. Test a Description</a>
+    </nav>
+
+    <!-- Missing expected columns notification if any -->
+    {% if eda.missing_expected %}
+    <div class="alert alert-info">
+      <strong>Note:</strong> Optional columns not found in this dataset:
+      <code>{{ eda.missing_expected | join(', ') }}</code>.
+      Analysis continued using the available columns; related sections below will say if a feature is unavailable.
+    </div>
+    {% endif %}
+
+    <!-- SECTION 1: DATASET OVERVIEW (at-a-glance summary cards) -->
+    <section id="overview-section">
+      <h2 class="section-band">1. Dataset Overview</h2>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-label">Total Jobs</div>
+          <div class="metric-value">{{ "{:,}".format(cards.total_jobs) }}</div>
+          <div class="metric-sub">Rows in the uploaded dataset</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Total Columns</div>
+          <div class="metric-value">{{ cards.total_columns }}</div>
+          <div class="metric-sub">{{ eda.present_expected | length }} of 8 expected detected</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Skills Detected</div>
+          <div class="metric-value">{{ cards.total_skills }}</div>
+          <div class="metric-sub">From the ~28-skill dictionary</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Top Skill</div>
+          <div class="metric-value metric-value-text" title="{{ cards.top_skill }}">{{ cards.top_skill }}</div>
+          <div class="metric-sub">Highest observed frequency</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Top Job Title</div>
+          <div class="metric-value metric-value-text" title="{{ cards.top_role }}">{{ cards.top_role }}</div>
+          <div class="metric-sub">Most common in the dataset</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Forecasting</div>
+          <div class="metric-value metric-value-text" title="{{ cards.forecast_status }}">{{ cards.forecast_status }}</div>
+          <div class="metric-sub">Phase 5 LSTM status</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: DATA QUALITY -->
+    <section id="quality-section">
+      <h2 class="section-band">2. Data Quality</h2>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-label">Data Completeness</div>
+          <div class="metric-value">{{ eda.data_completeness }}%</div>
+          <div class="metric-sub">{{ "{:,}".format(eda.total_missing_cells) }} missing cells total</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Duplicate Rows</div>
+          <div class="metric-value">{{ eda.duplicate_count }}</div>
+          <div class="metric-sub">{% if eda.duplicate_count == 0 %}Clean &ndash; 0 duplicates{% else %}Repeated rows detected{% endif %}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Classifier</div>
+          <div class="metric-value metric-value-text" title="{{ cards.classifier_status }}">{{ cards.classifier_status }}</div>
+          <div class="metric-sub">Phase 3 job-role model</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: EXPLORATORY DATA ANALYSIS -->
+    <h2 class="section-band" id="eda-section">3. Exploratory Analysis</h2>
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Column Information</h2>
+          <p class="section-subtitle">Data types, completeness, and non-missing value counts per column</p>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Column Name</th>
+              <th>Inferred Type</th>
+              <th>Non-Missing Count</th>
+              <th>Missing Count</th>
+              <th>Missing %</th>
+              <th>Unique Values</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for col in eda.columns_info %}
+            <tr>
+              <td><code>{{ col.name }}</code></td>
+              <td><span class="badge badge-green">{{ col.dtype }}</span></td>
+              <td>{{ "{:,}".format(col.non_missing) }}</td>
+              <td>{{ "{:,}".format(col.missing) }}</td>
+              <td>
+                {% if col.missing_pct > 0 %}
+                <span style="color: var(--amber); font-weight: 600;">{{ col.missing_pct }}%</span>
+                {% else %}
+                <span style="color: var(--green); font-weight: 600;">0.0%</span>
+                {% endif %}
+              </td>
+              <td>{{ "{:,}".format(col.unique_count) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Numerical Statistics (if available) -->
+    {% if eda.numerical_stats %}
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Numerical Statistics Summary</h2>
+          <p class="section-subtitle">Pandas descriptive statistics for numerical columns</p>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              {% for stat in eda.numerical_stats %}
+              <th><code>{{ stat.column }}</code></th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Count</strong></td>
+              {% for stat in eda.numerical_stats %}<td>{{ "{:,}".format(stat.count) }}</td>{% endfor %}
+            </tr>
+            <tr>
+              <td><strong>Mean</strong></td>
+              {% for stat in eda.numerical_stats %}<td>{{ "{:,.2f}".format(stat.mean) }}</td>{% endfor %}
+            </tr>
+            <tr>
+              <td><strong>Std Dev</strong></td>
+              {% for stat in eda.numerical_stats %}<td>{{ "{:,.2f}".format(stat.std) }}</td>{% endfor %}
+            </tr>
+            <tr>
+              <td><strong>Min</strong></td>
+              {% for stat in eda.numerical_stats %}<td>{{ "{:,.2f}".format(stat.min) }}</td>{% endfor %}
+            </tr>
+            <tr>
+              <td><strong>25% (Q1)</strong></td>
+              {% for stat in eda.numerical_stats %}<td>{{ "{:,.2f}".format(stat.q25) }}</td>{% endfor %}
+            </tr>
+            <tr>
+              <td><strong>50% (Median)</strong></td>
+              {% for stat in eda.numerical_stats %}<td>{{ "{:,.2f}".format(stat.median) }}</td>{% endfor %}
+            </tr>
+            <tr>
+              <td><strong>75% (Q3)</strong></td>
+              {% for stat in eda.numerical_stats %}<td>{{ "{:,.2f}".format(stat.q75) }}</td>{% endfor %}
+            </tr>
+            <tr>
+              <td><strong>Max</strong></td>
+              {% for stat in eda.numerical_stats %}<td>{{ "{:,.2f}".format(stat.max) }}</td>{% endfor %}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Matplotlib Charts (Phase 1) -->
+    <div class="two-col-grid" style="margin-bottom: 28px;">
+      {% if eda.charts.job_titles %}
+      <div class="section-card" style="margin-bottom: 0;">
+        <div class="section-header">
+          <h3 class="section-title">Top In-Demand Job Titles</h3>
+        </div>
+        <img src="{{ url_for('static', filename=eda.charts.job_titles) }}" alt="Top Job Titles Chart" class="chart-img">
+      </div>
+      {% endif %}
+
+      {% if eda.charts.companies %}
+      <div class="section-card" style="margin-bottom: 0;">
+        <div class="section-header">
+          <h3 class="section-title">Top Hiring Companies</h3>
+        </div>
+        <img src="{{ url_for('static', filename=eda.charts.companies) }}" alt="Top Companies Chart" class="chart-img">
+      </div>
+      {% endif %}
+
+      {% if eda.charts.locations %}
+      <div class="section-card" style="margin-bottom: 0;">
+        <div class="section-header">
+          <h3 class="section-title">Top Job Locations</h3>
+        </div>
+        <img src="{{ url_for('static', filename=eda.charts.locations) }}" alt="Top Locations Chart" class="chart-img">
+      </div>
+      {% endif %}
+
+      {% if eda.charts.employment_type %}
+      <div class="section-card" style="margin-bottom: 0;">
+        <div class="section-header">
+          <h3 class="section-title">Employment Type Distribution</h3>
+        </div>
+        <img src="{{ url_for('static', filename=eda.charts.employment_type) }}" alt="Employment Type Chart" class="chart-img">
+      </div>
+      {% endif %}
+    </div>
+
+    {% if eda.charts.posting_trend %}
+    <div class="section-card">
+      <div class="section-header">
+        <h3 class="section-title">Job Posting Trends Over Time</h3>
+        <span class="section-subtitle">Aggregated monthly from date_posted column</span>
+      </div>
+      <img src="{{ url_for('static', filename=eda.charts.posting_trend) }}" alt="Job Posting Trend Chart" class="chart-img">
+    </div>
+    {% endif %}
+
+    <!-- SECTION 4: NLP ANALYSIS & SKILL EXTRACTION (Phase 2) -->
+    <h2 class="section-band" id="nlp-section">4. NLP &amp; Skills</h2>
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">NLP Analysis &amp; Skill Extraction (Phase 2)</h2>
+          <p class="section-subtitle">Dictionary-based extraction across job descriptions using text normalization and tokenization</p>
+        </div>
+      </div>
+
+      {% if nlp and nlp.available %}
+      <div class="metrics-row" style="margin-bottom: 20px;">
+        <div class="metric-card">
+          <div class="metric-label">Descriptions Analyzed</div>
+          <div class="metric-value">{{ "{:,}".format(nlp.processed_count) }}</div>
+          <div class="metric-sub">{{ nlp.empty_count }} empty/missing skipped</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Unique Skills Found</div>
+          <div class="metric-value">{{ nlp.unique_skills_found }}</div>
+          <div class="metric-sub">Out of {{ nlp.dictionary_size }} in dictionary</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Descriptions with Skills</div>
+          <div class="metric-value">{{ "{:,}".format(nlp.postings_with_skills) }}</div>
+          <div class="metric-sub">{% if nlp.processed_count > 0 %}{{ (nlp.postings_with_skills / nlp.processed_count * 100)|round(1) }}% match rate{% endif %}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Top Skill Mentioned</div>
+          <div class="metric-value" style="font-size: 21px; color: var(--green);">
+            {% if nlp.top_skills %}{{ nlp.top_skills[0].name }}{% else %}N/A{% endif %}
+          </div>
+          <div class="metric-sub">{% if nlp.top_skills %}{{ nlp.top_skills[0].count }} mentions ({{ nlp.top_skills[0].percentage }}%){% endif %}</div>
+        </div>
+      </div>
+
+      <!-- Skill Frequency Chart & Table -->
+      <div class="two-col-grid">
+        <div>
+          {% if nlp_chart %}
+          <img src="{{ url_for('static', filename=nlp_chart) }}" alt="Top Extracted Skills Chart" class="chart-img">
+          {% endif %}
+        </div>
+        <div>
+          <h4 style="font-size: 13.5px; font-weight: 700; margin-bottom: 10px;">Top Matched Skills Table</h4>
+          <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Skill Name</th>
+                  <th>Category</th>
+                  <th>Mentions</th>
+                  <th>% of Postings</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in nlp.top_skills[:12] %}
+                <tr>
+                  <td><strong>{{ s.name }}</strong></td>
+                  <td><span class="badge badge-green">{{ s.category }}</span></td>
+                  <td>{{ s.count }}</td>
+                  <td>{{ s.percentage }}%</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Example Processed Description Pipeline -->
+      {% if nlp.example_processed %}
+      <div style="margin-top: 24px; padding: 18px; background: var(--canvas); border-radius: 8px; border: 1px solid var(--line);">
+        <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--green-dark);">
+          Example Preprocessed Job Description Pipeline
+        </h4>
+        <p style="font-size: 12px; margin-bottom: 6px;">
+          <strong>1. Raw Text:</strong> <span style="color: var(--muted);">"{{ nlp.example_processed.raw }}"</span>
+        </p>
+        <p style="font-size: 12px; margin-bottom: 6px;">
+          <strong>2. Cleaned (lower, no URLs/punctuation):</strong> <span style="color: var(--ink);">"{{ nlp.example_processed.cleaned }}"</span>
+        </p>
+        <p style="font-size: 12px; margin-bottom: 8px;">
+          <strong>3. Filtered Tokens (stopwords removed):</strong>
+          <code>{{ nlp.example_processed.tokens | join(' | ') }}</code>
+        </p>
+        <div>
+          <strong>4. Skills Extracted:</strong>
+          <div class="skill-chips">
+            {% for sk in nlp.example_processed.skills %}
+            <span class="skill-chip">{{ sk }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% else %}
+      <div class="alert alert-info">
+        NLP analysis unavailable because the dataset does not contain a <code>job_description</code> column.
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- SECTION 5: MACHINE LEARNING - JOB ROLE CLASSIFICATION (Phase 3) -->
+    <h2 class="section-band" id="classification-section">5. Job Role Classification</h2>
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Job Role Classification (Phase 3)</h2>
+          <p class="section-subtitle">Scikit-learn Pipeline: TF-IDF Vectorizer &rarr; Logistic Regression (80/20 train/test split)</p>
+        </div>
+      </div>
+
+      {% if ml and ml.status == 'trained' %}
+      <div class="metrics-row" style="margin-bottom: 20px;">
+        <div class="metric-card">
+          <div class="metric-label">Held-out Accuracy</div>
+          <div class="metric-value" style="color: var(--green);">{{ (ml.metrics.accuracy * 100)|round(1) }}%</div>
+          <div class="metric-sub">Tested on {{ ml.test_records }} records</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Weighted Precision</div>
+          <div class="metric-value">{{ (ml.metrics.precision * 100)|round(1) }}%</div>
+          <div class="metric-sub">Quality of positive predictions</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Weighted Recall</div>
+          <div class="metric-value">{{ (ml.metrics.recall * 100)|round(1) }}%</div>
+          <div class="metric-sub">Coverage of actual classes</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Weighted F1-Score</div>
+          <div class="metric-value">{{ (ml.metrics.f1_score * 100)|round(1) }}%</div>
+          <div class="metric-sub">Harmonic mean of precision &amp; recall</div>
+        </div>
+      </div>
+
+      <div class="two-col-grid">
+        <!-- Training Information -->
+        <div>
+          <h4 style="font-size: 13.5px; font-weight: 700; margin-bottom: 10px;">Training Dataset Breakdown</h4>
+          <div class="table-responsive" style="margin-bottom: 14px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Target Job Role Category</th>
+                  <th>Sample Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in ml.class_counts %}
+                <tr>
+                  <td><strong>{{ item.role }}</strong></td>
+                  <td>{{ item.count }} records</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size: 12px; color: var(--muted);">
+            <strong>Training records:</strong> {{ ml.train_records }} (80%) &bull;
+            <strong>Test records:</strong> {{ ml.test_records }} (20%) &bull;
+            <strong>TF-IDF Vocabulary:</strong> {{ ml.vocabulary_size }} unigrams/bigrams
+          </p>
+        </div>
+
+        <!-- Confusion Matrix Table -->
+        <div>
+          <h4 style="font-size: 13.5px; font-weight: 700; margin-bottom: 10px;">Confusion Matrix (Test Evaluation)</h4>
+          <div class="table-responsive">
+            <table class="confusion-matrix-table">
+              <thead>
+                <tr>
+                  <th>Actual \ Pred</th>
+                  {% for c in ml.classes %}
+                  <th title="{{ c }}">{{ c[:6] }}..</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in ml.confusion_matrix %}
+                {% set row_idx = loop.index0 %}
+                <tr>
+                  <th style="font-size: 11px; text-align: left;">{{ ml.classes[row_idx] }}</th>
+                  {% for val in row %}
+                  {% set col_idx = loop.index0 %}
+                  <td class="{% if row_idx == col_idx and val > 0 %}cm-diag{% endif %}">{{ val }}</td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size: 11.5px; color: var(--muted); margin-top: 8px;">
+            Diagonal cells represent correct predictions on unseen test descriptions.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sample Held-out Test Predictions Table -->
+      {% if ml.eval_examples %}
+      <div style="margin-top: 24px;">
+        <h4 style="font-size: 13.5px; font-weight: 700; margin-bottom: 10px;">Held-Out Test Sample Predictions</h4>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Actual Role</th>
+                <th>Predicted Role</th>
+                <th>Result</th>
+                <th>Job Description Excerpt</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ex in ml.eval_examples %}
+              <tr>
+                <td><strong>{{ ex.actual }}</strong></td>
+                <td>{{ ex.predicted }}</td>
+                <td>
+                  {% if ex.actual == ex.predicted %}
+                  <span class="badge badge-green">&#10003; Match</span>
+                  {% else %}
+                  <span class="badge badge-amber">&times; Mismatch</span>
+                  {% endif %}
+                </td>
+                <td style="color: var(--muted); font-size: 12px;">{{ ex.excerpt }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {% else %}
+      <div class="alert alert-info">
+        <strong>Model Training Note:</strong> {{ ml.message if ml else 'Job role classification unavailable for this dataset.' }}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- SECTION 6: SKILL TREND ANALYSIS + FEATURE ENGINEERING (Phase 4) -->
+    <h2 class="section-band">6. Skill Trend Analysis</h2>
+    <div class="section-card" id="skill-trends">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Skill Trend Analysis &amp; Feature Engineering (Phase 4)</h2>
+          <p class="section-subtitle">
+            Observed behaviour inside this uploaded dataset: frequency, share, growth, role coverage,
+            and the engineered features prepared for Phase 5 forecasting. This is analysis, not forecasting.
+          </p>
+        </div>
+      </div>
+
+      {% if trend and trend.available %}
+      <div class="metrics-row" style="margin-bottom: 20px;">
+        <div class="metric-card">
+          <div class="metric-label">Tracked Skills</div>
+          <div class="metric-value">{{ trend.tracked_skills }}</div>
+          <div class="metric-sub">From the Phase 2 dictionary</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Growing Skills</div>
+          <div class="metric-value" style="color: var(--green);">{{ trend.trend_counts.get('Growing', 0) }}</div>
+          <div class="metric-sub">Observed growth above +10%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Stable Skills</div>
+          <div class="metric-value">{{ trend.trend_counts.get('Stable', 0) }}</div>
+          <div class="metric-sub">Between -10% and +10%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Declining Skills</div>
+          <div class="metric-value" style="color: var(--amber);">{{ trend.trend_counts.get('Declining', 0) }}</div>
+          <div class="metric-sub">Observed decline below -10%</div>
+        </div>
+      </div>
+
+      {% if trend.month_warning %}
+      <div class="alert alert-info">{{ trend.month_warning }}</div>
+      {% endif %}
+
+      <!-- Skill frequency table: shown even when date_posted is missing -->
+      <h4 class="mini-heading">Skill Frequency Table</h4>
+      <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Skill</th>
+              <th>Category</th>
+              <th>Job Count</th>
+              <th>Share %</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in trend.frequency_table[:15] %}
+            <tr>
+              <td><strong>{{ row.skill }}</strong></td>
+              <td><span class="badge badge-green">{{ row.category }}</span></td>
+              <td>{{ row.job_count }}</td>
+              <td>{{ row.share }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="formula-note" style="margin-top: 14px; margin-bottom: 26px;">
+        Share (%) = (Skill Job Count / Total Job Postings) &times; 100, using
+        {{ trend.total_postings }} analyzed postings.
+        A skill is counted at most once per posting, so "Python Python Python AWS" contributes 1 to Python and 1 to AWS.
+        Distinction used throughout: <strong>frequency</strong> = raw job count, <strong>share</strong> = percentage of postings,
+        <strong>growth</strong> = change between the latest two months.
+      </p>
+
+      {% if trend.charts.top_frequency %}
+      <h4 class="mini-heading">Top 10 Skills by Frequency</h4>
+      <img src="{{ url_for('static', filename=trend.charts.top_frequency) }}" alt="Top skills by frequency" class="chart-img" style="margin-bottom: 26px;">
+      {% endif %}
+
+      {% if trend.time_series_available %}
+      <p class="formula-note">
+        Growth Rate (%) = ((Recent Period Count &minus; Previous Period Count) / Previous Period Count) &times; 100 &nbsp;&middot;&nbsp;
+        Comparing the most recent month <strong>{{ trend.recent_month }}</strong> with the previous month
+        <strong>{{ trend.previous_month }}</strong>.<br>
+        Trend thresholds: growth &gt; +10% = Growing &middot; between &minus;10% and +10% = Stable &middot; below &minus;10% = Declining.
+        These are fixed analytical rules chosen for this project, not machine-learning predictions.
+      </p>
+
+      {% if trend.charts.top_growth %}
+      <h4 class="mini-heading">Top 10 Skills by Observed Growth</h4>
+      <img src="{{ url_for('static', filename=trend.charts.top_growth) }}" alt="Top skills by observed growth" class="chart-img" style="margin-bottom: 26px;">
+      {% endif %}
+
+      <!-- Skill growth table -->
+      <h4 class="mini-heading">Skill Growth Table (Previous vs Recent Period)</h4>
+      <div class="table-responsive" style="max-height: 380px; overflow-y: auto; margin-bottom: 26px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Skill</th>
+              <th>Previous Period ({{ trend.previous_month }})</th>
+              <th>Recent Period ({{ trend.recent_month }})</th>
+              <th>Growth %</th>
+              <th>Trend Classification</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in trend.growth_table %}
+            <tr>
+              <td><strong>{{ row.skill }}</strong></td>
+              <td>{{ row.previous_count }}</td>
+              <td>{{ row.recent_count }}</td>
+              <td>
+                {% if row.growth is not none %}
+                  <strong>{{ "%+.1f"|format(row.growth) }}%</strong>
+                {% else %}
+                  <span style="color: var(--muted); font-size: 11.5px;">n/a (no previous mentions)</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="trend-badge trend-{{ row.trend|lower|replace(' ', '-') }}">{{ row.trend }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Emerging skills -->
+      <div class="panel-callout">
+        <h4 class="mini-heading" style="margin-top: 0;">Emerging Skills (Volume + Observed Growth)</h4>
+        {% if trend.emerging.available and trend.emerging['items'] %}
+          <p class="formula-note" style="margin-top: 6px;">{{ trend.emerging.explanation }}</p>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Skill</th>
+                  <th>Recent Month Mentions</th>
+                  <th>Observed Growth</th>
+                  <th>Share of Postings</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in trend.emerging['items'] %}
+                <tr>
+                  <td><strong>{{ item.skill }}</strong></td>
+                  <td>{{ item.recent_count }}</td>
+                  <td>{{ "%+.1f"|format(item.growth) }}%</td>
+                  <td>{{ (item.recent_count / trend.total_postings * 100)|round(1) }}%</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p style="font-size: 12.5px; color: var(--muted);">
+            No skill passed the emerging-skill rule in this dataset. {{ trend.emerging.explanation if trend.emerging.explanation else '' }}
+            A skill must have enough recent volume (at least {{ trend.emerging.min_recent if trend.emerging.min_recent else 5 }} recent mentions)
+            and observed growth above +10%. Low-volume jumps such as 1 &rarr; 5 mentions (+400%) are deliberately ignored,
+            because they are statistically thin.
+          </p>
+        {% endif %}
+      </div>
+
+      <!-- Interactive skill selection (plain HTML form, no JavaScript framework) -->
+      <div class="select-skill-bar" style="margin-top: 26px;">
+        <form method="GET" action="{{ url_for('skill_trend') }}">
+          <label for="skill_select"><strong>Inspect one skill:</strong></label>
+          <select name="skill" id="skill_select">
+            {% for skill in trend.time_series_available_skills %}
+            <option value="{{ skill }}" {% if skill == trend.selected_skill %}selected{% endif %}>{{ skill }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-primary btn-small">View Skill Trend</button>
+        </form>
+      </div>
+
+      {% if trend.skill_detail %}
+      <div class="panel-callout" style="margin-top: 18px;">
+        <h4 class="mini-heading" style="margin-top: 0;">
+          {{ trend.skill_detail.skill }} detailed trend
+          <span class="badge badge-green">{{ trend.skill_detail.category }}</span>
+        </h4>
+        <p class="formula-note">
+          Total mentions: <strong>{{ trend.skill_detail.total_job_count }}</strong> &middot;
+          Overall share: <strong>{{ trend.skill_detail.total_share }}%</strong> of analyzed postings
+        </p>
+        <div class="two-col-grid">
+          <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Mentions</th>
+                  <th>Share %</th>
+                  <th>Growth %</th>
+                  <th>Trend</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for m in trend.skill_detail.months %}
+                <tr>
+                  <td>{{ m.month }}</td>
+                  <td>{{ m.count }}</td>
+                  <td>{{ m.share }}%</td>
+                  <td>
+                    {% if m.growth is not none %}{{ "%+.1f"|format(m.growth) }}%{% else %}&mdash;{% endif %}
+                  </td>
+                  <td><span class="trend-badge trend-{{ m.trend|lower|replace(' ', '-') }}">{{ m.trend }}</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div>
+            {% if trend.charts.selected_skill %}
+            <img src="{{ url_for('static', filename=trend.charts.selected_skill) }}" alt="Selected skill monthly trend" class="chart-img">
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% endif %}
+
+      <!-- Role-skill matrix -->
+      <h4 class="mini-heading" style="margin-top: 26px;">Role-Skill Analysis</h4>
+      {% if trend.role_skill.available %}
+        <p class="formula-note">
+          Source of role labels: <strong>{{ trend.role_source }}</strong>. {{ trend.role_skill.note }}
+          Percentages are read as: "share of postings in that role mentioning the skill".
+        </p>
+        <div class="table-responsive">
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th>Broad Role (Postings)</th>
+                {% for skill in trend.role_skill.skills %}
+                <th>{{ skill }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for role in trend.role_skill.roles %}
+              {% set role_index = loop.index0 %}
+              <tr>
+                <th style="text-align: left;">{{ role.role }} ({{ role.postings }})</th>
+                {% for value in trend.role_skill.matrix[role_index] %}
+                <td class="matrix-cell {% if value >= 60 %}matrix-high{% elif value >= 30 %}matrix-mid{% elif value > 0 %}matrix-low{% endif %}">
+                  {{ value }}%
+                </td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if trend.charts.role_skill %}
+        <h4 class="mini-heading" style="margin-top: 20px;">Role-Skill Comparison Chart</h4>
+        <img src="{{ url_for('static', filename=trend.charts.role_skill) }}" alt="Role skill comparison chart" class="chart-img">
+        {% endif %}
+      {% else %}
+        <div class="alert alert-info">
+          Role-skill analysis unavailable: {{ trend.role_skill.reason }}
+          Skill frequency and growth results above are still valid.
+        </div>
+      {% endif %}
+
+      <!-- Feature engineering output for Phase 5 -->
+      <div class="panel-callout" style="margin-top: 26px;">
+        <h4 class="mini-heading" style="margin-top: 0;">Engineered Features Prepared for Phase 5</h4>
+        {% if trend.features_path %}
+        <p class="formula-note">
+          Saved to <code>{{ trend.features_path }}</code> &middot; {{ trend.engineered_feature_count }} monthly rows.
+          Phase 5 (TensorFlow forecasting) will read this file. No forecasting model is used in Phase 4.
+        </p>
+        <div class="table-responsive" style="max-height: 300px; overflow-y: auto; margin-bottom: 14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>month</th>
+                <th>skill</th>
+                <th>job_count</th>
+                <th>skill_share</th>
+                <th>previous_month_count</th>
+                <th>growth_rate</th>
+                <th>trend</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in trend.features_preview %}
+              <tr>
+                <td>{{ row.month }}</td>
+                <td><strong>{{ row.skill }}</strong></td>
+                <td>{{ row.job_count }}</td>
+                <td>{{ row.skill_share }}%</td>
+                <td>{{ row.previous_month_count if row.previous_month_count == row.previous_month_count else 'n/a' }}</td>
+                <td>{% if row.growth_rate == row.growth_rate %}{{ "%+.1f"|format(row.growth_rate) }}%{% else %}n/a{% endif %}</td>
+                <td>{{ row.trend }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+        <table>
+          <thead>
+            <tr><th>Feature</th><th>Why it exists</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>job_count</code></td><td>Number of postings mentioning the skill that month. This is the value the forecast will predict.</td></tr>
+            <tr><td><code>skill_share</code></td><td>Job count divided by that month's postings &times; 100, so a generally busier month is not mistaken for a rising skill.</td></tr>
+            <tr><td><code>previous_month_count</code></td><td>A simple lag feature: the same skill's count one month earlier.</td></tr>
+            <tr><td><code>growth_rate</code></td><td>Month-over-month momentum: ((recent - previous) / previous) &times; 100. Empty when there is no previous value.</td></tr>
+          </tbody>
+        </table>
+        <p class="formula-note" style="margin-bottom: 0;">
+          Deliberately small feature set: four features are enough for a simple time-series model and easy to explain.
+          Duplicate postings are counted as submitted, consistent with Phases 1 and 2.
+        </p>
+      </div>
+
+      {% else %}
+      <div class="alert alert-info">
+        {{ trend.message }}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- SECTION 7: AI TREND FORECAST (Phase 5) -->
+    <h2 class="section-band">7. AI Trend Forecast</h2>
+    <div class="section-card" id="forecast-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">AI Trend Forecast (Phase 5)</h2>
+          <p class="section-subtitle">
+            A tiny TensorFlow LSTM trained on one skill's monthly job counts from Phase 4,
+            compared against a naive baseline. Results are predicted mention volume, not guaranteed demand.
+          </p>
+        </div>
+      </div>
+
+      {% if forecast and forecast.skills %}
+      <div class="select-skill-bar">
+        <form method="GET" action="{{ url_for('forecast') }}">
+          <label for="forecast_skill"><strong>Select Skill:</strong></label>
+          <select name="skill" id="forecast_skill">
+            {% for item in forecast.skills %}
+            <option value="{{ item.skill }}" {% if item.skill == forecast.selected %}selected{% endif %}>
+              {{ item.skill }} ({{ item.months }} months{% if not item.sufficient %}, insufficient history{% endif %})
+            </option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-primary btn-small">Forecast</button>
+        </form>
+      </div>
+      <p class="formula-note">
+        The model looks at the previous 3 months (lookback = 3) to predict the next month.
+        Training uses the first 80% of months in chronological order; the last 20% are held out for testing.
+        At least 8 monthly observations are recommended before forecasting is attempted.
+      </p>
+
+      {% set result = forecast.result %}
+      {% if result is none %}
+      <div class="alert alert-info">
+        Choose a skill above and click <strong>Forecast</strong>. Only the selected skill is trained, on request,
+        because LSTM training is the slowest step in the project.
+      </div>
+      {% elif result.status == 'unavailable' %}
+      <div class="alert alert-danger">{{ result.message }}</div>
+      {% if result.naive %}
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Model</th><th>MAE (test)</th><th>RMSE (test)</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Naive Baseline</strong> (repeat last month)</td><td>{{ result.naive.mae }}</td><td>{{ result.naive.rmse }}</td></tr>
+            <tr><td><strong>LSTM</strong></td><td colspan="2">Not available for this skill.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      {% else %}
+      {% if result.status == 'ok_constant' %}
+      <div class="alert alert-info">{{ result.message }}</div>
+      {% endif %}
+      <div class="metrics-row" style="margin-bottom: 20px;">
+        <div class="metric-card">
+          <div class="metric-label">Selected Skill</div>
+          <div class="metric-value" style="font-size: 21px; color: var(--green);">{{ result.skill }}</div>
+          <div class="metric-sub">{{ result.n_months }} historical monthly observations</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Training Period</div>
+          <div class="metric-value">{{ result.train_months }}</div>
+          <div class="metric-sub">First 80% of months, in order</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Held-Out Test Period</div>
+          <div class="metric-value">{{ result.test_months }}</div>
+          <div class="metric-sub">Last 20% of months: {{ result.test_month_labels | join(', ') }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Model Architecture</div>
+          <div class="metric-value" style="font-size: 19px;">LSTM(32)</div>
+          <div class="metric-sub">Dense(1) &middot; Adam &middot; MSE &middot; 30 epochs max</div>
+        </div>
+      </div>
+
+      <h4 class="mini-heading">Naive Baseline vs LSTM (held-out test months only)</h4>
+      <div class="table-responsive" style="margin-bottom: 16px;">
+        <table>
+          <thead><tr><th>Model</th><th>MAE</th><th>RMSE</th><th>Reading</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Naive Baseline</strong> (predict last month's count)</td>
+              <td>{{ result.naive.mae }}</td>
+              <td>{{ result.naive.rmse }}</td>
+              <td style="color: var(--muted);">Simple reference every model must beat.</td>
+            </tr>
+            {% if result.lstm %}
+            <tr>
+              <td><strong>LSTM</strong> {% if result.winner == 'LSTM' %}<span class="badge badge-green">better here</span>{% endif %}</td>
+              <td>{{ result.lstm.mae }}</td>
+              <td>{{ result.lstm.rmse }}</td>
+              <td style="color: var(--muted);">Lower is better; test data the model never trained on.</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td><strong>LSTM</strong></td>
+              <td colspan="3" style="color: var(--muted);">Skipped for this skill (see note above); naive baseline shown instead.</td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+      {% if result.verdict %}
+      <div class="alert alert-info"><strong>Honest comparison:</strong> {{ result.verdict }}</div>
+      {% endif %}
+      <p class="formula-note">
+        MAE = average absolute difference between actual and predicted counts.
+        RMSE = similar to MAE, but penalizes large errors more strongly.
+        Both are computed on the held-out test months only, never on training data.
+      </p>
+
+      {% if result.chart %}
+      <h4 class="mini-heading">Actual History, Test Predictions &amp; Future Forecast</h4>
+      <img src="{{ url_for('static', filename=result.chart) }}" alt="LSTM forecast chart for {{ result.skill }}" class="chart-img" style="margin-bottom: 22px;">
+      {% endif %}
+
+      {% if result.future %}
+      <h4 class="mini-heading">Next 3 Months: Predicted Mention Volume</h4>
+      <div class="table-responsive" style="margin-bottom: 16px;">
+        <table>
+          <thead><tr><th>Month</th><th>Forecasted Job Count</th></tr></thead>
+          <tbody>
+            {% for row in result.future %}
+            <tr><td>{{ row.month }}</td><td><strong>{{ row.forecast }}</strong> postings</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="formula-note" style="margin-bottom: 0;">
+        Recursive forecast: the latest 3 values predict the next month, then that prediction joins the
+        window for the month after. Values are clipped at zero and rounded. This is predicted mention
+        volume based on the analyzed dataset &mdash; a model estimate, not guaranteed future demand.
+      </p>
+      {% endif %}
+      {% endif %}
+
+      {% else %}
+      <div class="alert alert-info">
+        Forecast unavailable: no monthly skill history exists yet. Upload a dataset with a valid
+        <code>date_posted</code> column spanning at least 8 months so Phase 4 can build
+        <code>data/processed/skill_trends.csv</code>, then return here to forecast.
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- SECTION 8: AI-GENERATED JOB MARKET INSIGHTS (Phase 6) -->
+    <h2 class="section-band">8. AI-Generated Job Market Insights</h2>
+    <div class="section-card" id="insights-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">AI-Generated Job Market Insights (Phase 6)</h2>
+          <p class="section-subtitle">
+            An LLM explains the results already computed by Phases 1&ndash;5. It receives a small structured
+            summary (never the CSV) and is instructed to use only those numbers. It does not classify, extract,
+            or forecast anything &mdash; it only explains.
+          </p>
+        </div>
+      </div>
+
+      {% set ai = insights.result if insights else none %}
+
+      <div class="select-skill-bar" style="margin-bottom: 18px;">
+        <form method="POST" action="{{ url_for('insights') }}" id="insightsForm">
+          <span style="font-size: 12.5px; color: var(--ink);">
+            <strong>Runs only on request</strong> &middot; sends a compact summary of the analysis to the configured LLM.
+          </span>
+          <button type="submit" class="btn btn-primary btn-small" id="insightsBtn">Generate AI Insights</button>
+          <span id="insightsLoading" style="display: none; font-size: 12.5px; color: var(--muted);">Generating insights...</span>
+        </form>
+      </div>
+
+      {% if ai is none %}
+        {% if insights and not insights.enabled %}
+        <div class="alert alert-info">
+          AI insights unavailable. Configure an LLM API key to enable this feature
+          (set <code>LLM_ENABLED=true</code> and <code>LLM_API_KEY</code> in <code>.env</code>). Everything else on this dashboard works without it.
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+          Click <strong>Generate AI Insights</strong> to get a plain-English explanation of the observed trends,
+          the role&ndash;skill relationships, and the LSTM forecast (if you have run one above).
+        </div>
+        {% endif %}
+
+      {% elif ai.status == 'disabled' %}
+      <div class="alert alert-info">{{ ai.message }}</div>
+
+      {% elif ai.status == 'error' %}
+      <div class="alert alert-danger"><strong>AI insights could not be generated:</strong> {{ ai.message }}</div>
+      <p class="formula-note" style="margin-bottom: 0;">
+        All numerical results above (analysis, classification, trends, forecast) are unaffected &mdash; they were computed
+        by Pandas, Scikit-learn and TensorFlow, not by the LLM.
+      </p>
+
+      {% else %}
+      <p class="formula-note">
+        Generated by <code>{{ ai.model }}</code> from the structured summary below. Wording is the LLM's; every number
+        was computed earlier by the application. <strong>Observed</strong> = what the dataset shows.
+        <strong>Forecast</strong> = an LSTM model estimate, not guaranteed demand.
+      </p>
+
+      <h4 class="mini-heading">Overall Summary</h4>
+      <p style="font-size: 13.5px; line-height: 1.7; margin-bottom: 20px;">{{ ai.insights.summary }}</p>
+
+      <h4 class="mini-heading">Key Trends (observed in the analyzed dataset)</h4>
+      <ul style="margin: 0 0 20px 18px; font-size: 13px; line-height: 1.75;">
+        {% for item in ai.insights.key_trends %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+
+      <h4 class="mini-heading">Forecast Interpretation (model estimate)</h4>
+      <p style="font-size: 13.5px; line-height: 1.7; margin-bottom: 20px;">{{ ai.insights.forecast_interpretation }}</p>
+
+      <h4 class="mini-heading">Role&ndash;Skill Insight</h4>
+      <p style="font-size: 13.5px; line-height: 1.7; margin-bottom: 20px;">{{ ai.insights.role_skill_insight }}</p>
+
+      <div class="panel-callout">
+        <h4 class="mini-heading" style="margin-top: 0;">Limitations</h4>
+        <p style="font-size: 13px; line-height: 1.7; margin-bottom: 10px;">{{ ai.insights.limitations }}</p>
+        <ul style="margin: 0 0 0 18px; font-size: 12.5px; color: var(--muted); line-height: 1.7;">
+          <li>The uploaded dataset is the only source of these observations.</li>
+          <li>Observed frequency in this dataset is not the same as guaranteed market demand.</li>
+          <li>The forecast is an LSTM model estimate, not a promise about future hiring.</li>
+          <li>Job-posting data can carry sampling bias (which companies, regions, and months were collected).</li>
+        </ul>
+      </div>
+
+      <details style="margin-top: 16px;">
+        <summary style="cursor: pointer; font-size: 12.5px; color: var(--muted);">Show the structured summary that was sent to the LLM</summary>
+        <pre style="font-size: 11.5px; background: var(--canvas); border: 1px solid var(--line); border-radius: 8px; padding: 14px; overflow-x: auto; margin-top: 10px;">{{ ai.summary_sent | tojson(indent=2) }}</pre>
+      </details>
+      {% endif %}
+    </div>
+
+    <!-- SECTION 9: PREDICT A NEW JOB DESCRIPTION (Phase 3 Interactive) -->
+    <h2 class="section-band">9. Test a Job Description</h2>
+    <section class="section-card" id="predict-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Predict Job Role for a New Description</h2>
+          <p class="section-subtitle">Test the trained Scikit-learn Logistic Regression model on custom text</p>
+        </div>
+      </div>
+
+      <div class="predict-box">
+        <form action="{{ url_for('predict') }}" method="POST">
+          <label for="desc_input" style="font-weight: 600; display: block; margin-bottom: 6px;">
+            Enter or Paste Job Description:
+          </label>
+          <textarea
+            id="desc_input"
+            name="job_description"
+            class="predict-textarea"
+            placeholder="e.g. Seeking a candidate proficient in Python, SQL, Pandas, building statistical models and machine learning pipelines..."
+            required
+          >{{ user_input_desc if user_input_desc else '' }}</textarea>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <button type="submit" class="btn btn-primary">
+              Predict Job Role
+            </button>
+            <span style="font-size: 12px; color: var(--muted);">
+              Uses trained TF-IDF vectorizer + Logistic Regression
+            </span>
+          </div>
+        </form>
+
+        <!-- Prediction Result Display -->
+        {% if prediction %}
+          {% if prediction.status == 'success' %}
+          <div class="prediction-result-card">
+            <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 600;">Predicted Category</div>
+            <div class="prediction-role">{{ prediction.predicted_role }}</div>
+            <div class="prediction-conf">
+              Model Probability: <strong>{{ prediction.confidence }}%</strong>
+            </div>
+            <p style="font-size: 11.5px; color: var(--muted); margin-top: 8px;">
+              Model probability is an estimate for this classification model, not a guarantee.
+            </p>
+
+            {% if prediction.all_probabilities %}
+            <div style="margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px;">
+              <span style="font-size: 11.5px; font-weight: 600; color: var(--muted);">Class Probabilities:</span>
+              <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px;">
+                {% for p in prediction.all_probabilities %}
+                <span style="font-size: 12px; color: var(--ink);">
+                  {{ p.role }}: <strong>{{ p.probability }}%</strong>
+                </span>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          {% else %}
+          <div class="alert alert-danger" style="margin-top: 16px;">
+            {{ prediction.message }}
+          </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- DATA PREVIEW (First 10 rows) -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Raw Data Sample (First 10 Rows)</h2>
+          <p class="section-subtitle">Original uploaded values displayed transparently</p>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              {% for h in eda.preview_headers %}
+              <th>{{ h }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in eda.preview_rows %}
+            <tr>
+              {% for h in eda.preview_headers %}
+              <td>
+                {% if row[h]|string|length > 60 %}
+                {{ row[h]|string|truncate(60) }}
+                {% else %}
+                {{ row[h] }}
+                {% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Back to top -->
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="{{ url_for('index') }}" class="btn btn-secondary">Upload a Different Dataset</a>
+    </div>
+
+    <footer class="footer">
+      LinkedInJobTrendAI &bull; Numbers computed by Pandas, Scikit-learn &amp; TensorFlow &bull; LLM used only to explain results
+    </footer>
+  </main>
+
+  <script>
+    // Harmless UI helper only: shows "Generating insights..." while Flask calls the LLM.
+    // All analysis, NLP, ML, forecasting and the LLM call itself run on the Python side.
+    (function () {
+      var form = document.getElementById('insightsForm');
+      if (!form) { return; }
+      form.addEventListener('submit', function () {
+        var btn = document.getElementById('insightsBtn');
+        var loading = document.getElementById('insightsLoading');
+        if (btn) { btn.disabled = true; btn.textContent = 'Generating...'; }
+        if (loading) { loading.style.display = 'inline'; }
+      });
+    })();
+  </script>
+</body>
+</html>
